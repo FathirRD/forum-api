@@ -1,4 +1,6 @@
 /* istanbul ignore file */
+/* eslint no-await-in-loop: "off" */
+
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const UsersTableTestHelper = {
@@ -11,6 +13,39 @@ const UsersTableTestHelper = {
     };
 
     await pool.query(query);
+  },
+
+  async addUserMany() {
+    const payload1 = {
+      id: 'user-1111',
+      username: 'tester1',
+      password: 'asdf7776',
+      fullname: 'test test test',
+    };
+
+    const payload2 = {
+      id: 'user-2222',
+      username: 'tester2',
+      password: 'asdf7776',
+      fullname: 'test test test',
+    };
+
+    const insertPayload = [payload1, payload2];
+
+    let i;
+    for (i = 0; i < 2; i += 1) {
+      const query = {
+        text: 'INSERT INTO users VALUES($1, $2, $3, $4)',
+        values: [
+          insertPayload[i].id,
+          insertPayload[i].username,
+          insertPayload[i].password,
+          insertPayload[i].fullname,
+        ],
+      };
+
+      await pool.query(query);
+    }
   },
 
   async findUsersById(id) {

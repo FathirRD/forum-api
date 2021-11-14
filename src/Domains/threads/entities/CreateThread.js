@@ -4,17 +4,17 @@ class CreateThread {
 
     this.title = payload.title;
     this.body = payload.body;
-    this.user = payload.user;
+    this.owner = payload.owner;
   }
 
   _verifyPayload(payload) {
-    const { title, body, user } = payload;
+    const { title, body, owner } = payload;
 
-    if (!title || !body || !user) {
+    if (!title || !body || !owner) {
       throw new Error('CREATE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof title !== 'string' || typeof body !== 'string' || typeof user !== 'string') {
+    if (typeof title !== 'string' || typeof body !== 'string' || typeof owner !== 'string') {
       throw new Error('CREATE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
 
