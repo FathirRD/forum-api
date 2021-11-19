@@ -1,5 +1,6 @@
 src/mynote.txt
 
+.env
 node_modules
 package-lock.json
 .idea
