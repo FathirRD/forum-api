@@ -54,19 +54,20 @@ describe('DeleteCommentUseCase', () => {
 
     // Assert
     expect(mockAuthenticationTokenManager.getHeaderAuthorization)
-      .toBeCalledWith(useCaseHeader);
+      .toBeCalledWith(useCaseHeader.authorization);
     expect(mockAuthenticationTokenManager.verifyAccessToken)
       .toBeCalledWith(expectedToken);
     expect(mockAuthenticationTokenManager.decodePayload)
       .toBeCalledWith(expectedToken);
 
-    expect(mockCommentRepository.checkCommentIsExist)
+    expect(mockCommentRepository.getCommentById)
       .toBeCalledWith(useCaseParameter.commentId);
-    expect(mockCommentRepository.verifyCommentAccess).toBeCalledWith({
-      ownerId: decodedTokenUserId,
-      commentId: useCaseParameter.commentId,
-    });
-    expect(mockCommentRepository.deleteCommentById)
+    expect(mockCommentRepository.verifyCommentAccess)
+      .toBeCalledWith({
+        ownerId: decodedTokenUserId,
+        commentId: useCaseParameter.commentId,
+      });
+    expect(mockCommentRepository.deleteComment)
       .toBeCalledWith(expectedDeletedComment.id);
   });
 });

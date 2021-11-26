@@ -50,22 +50,22 @@ describe('AddCommentUseCase', () => {
         username: 'tester',
       }));
 
-    /** creating use case instance */
+    // Add comment instance
     const addCommentUseCase = new AddCommentUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       authenticationTokenManager: mockAuthenticationTokenManager,
     });
 
-    // action
+    // Aaction
     const addedComment = await addCommentUseCase.execute(
-      useCasePayload, useCaseParameter, useCaseHeader,
+      useCaseParameter, useCaseHeader, useCasePayload,
     );
 
-    // assert
+    // Assert
     expect(addedComment).toStrictEqual(expectedAddedComment);
     expect(mockAuthenticationTokenManager.getHeaderAuthorization)
-      .toBeCalledWith(useCaseHeader);
+      .toBeCalledWith(useCaseHeader.authorization);
     expect(mockAuthenticationTokenManager.verifyAccessToken)
       .toBeCalledWith(expectedToken);
     expect(mockAuthenticationTokenManager.decodePayload)
@@ -75,7 +75,7 @@ describe('AddCommentUseCase', () => {
     expect(mockCommentRepository.addComment)
       .toBeCalledWith(new AddComment({
         content: useCasePayload.content,
-        threadId: useCaseParameter.threadId,
+        thread: useCaseParameter.threadId,
         owner: decodedTokenUserId,
       }));
   });

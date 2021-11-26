@@ -37,7 +37,7 @@ describe('DeleteReplyUseCase', () => {
       .mockImplementation(() => Promise.resolve());
     mockReplyRepository.verifyReplyAccess = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.deleteReplyById = jest.fn()
+    mockReplyRepository.deleteReply = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
     // delete reply use case instance
@@ -51,7 +51,7 @@ describe('DeleteReplyUseCase', () => {
 
     // Assert
     expect(mockAuthenticationTokenManager.getHeaderAuthorization)
-      .toBeCalledWith(useCaseHeader);
+      .toBeCalledWith(useCaseHeader.authorization);
     expect(mockAuthenticationTokenManager.verifyAccessToken)
       .toBeCalledWith(expectedToken);
     expect(mockAuthenticationTokenManager.decodePayload)
@@ -60,10 +60,10 @@ describe('DeleteReplyUseCase', () => {
     expect(mockReplyRepository.getReplyById)
       .toBeCalledWith(useCaseParameter.replyId);
     expect(mockReplyRepository.verifyReplyAccess).toBeCalledWith({
-      ownerId: decodedTokenUserId,
-      replyId: useCaseParameter.replyId,
+      owner: decodedTokenUserId,
+      id: useCaseParameter.replyId,
     });
-    expect(mockReplyRepository.deleteReplyById)
+    expect(mockReplyRepository.deleteReply)
       .toBeCalledWith(useCaseParameter.replyId);
   });
 });

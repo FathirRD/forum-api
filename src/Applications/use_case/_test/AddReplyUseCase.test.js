@@ -47,6 +47,9 @@ describe('AddReplyUseCase', () => {
         username: 'tester',
       }));
 
+    mockCommentRepository.getCommentById = jest.fn()
+      .mockImplementation(() => Promise.resolve());
+
     mockReplyRepository.addReply = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedAddedReply));
 
@@ -59,7 +62,7 @@ describe('AddReplyUseCase', () => {
 
     // Action
     const addedReply = await addReplyUseCase.execute(
-      useCasePayload, useCaseParameter, useCaseHeader,
+      useCaseParameter, useCaseHeader, useCasePayload,
     );
 
     // Assert
@@ -71,9 +74,12 @@ describe('AddReplyUseCase', () => {
     expect(mockAuthenticationTokenManager.decodePayload)
       .toBeCalledWith(expectedToken);
 
+    expect(mockCommentRepository.getCommentById)
+      .toBeCalledWith(useCaseParameter.commentId);
+
     expect(mockReplyRepository.addReply).toBeCalledWith(new AddReply({
-      threadId: useCaseParameter.threadId,
-      commentId: useCaseParameter.commentId,
+      thread: useCaseParameter.threadId,
+      comment: useCaseParameter.commentId,
       owner: decodedTokenUserId,
       content: useCasePayload.content,
     }));
