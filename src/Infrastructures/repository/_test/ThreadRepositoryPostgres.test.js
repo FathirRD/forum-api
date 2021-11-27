@@ -20,7 +20,7 @@ describe('ThreadRepositoryPostgres', () => {
   });
 
   describe('addThread function', () => {
-    it('should persist create thread and return created thread correctly', async () => {
+    it('should persist create thread correctly', async () => {
       // Arrange
       await UsersTableTestHelper.addUserMany();
 
@@ -126,9 +126,8 @@ describe('ThreadRepositoryPostgres', () => {
       expect(results.id).toEqual(createThreadPayload.id);
       expect(results.title).toEqual(createThreadPayload.title);
       expect(results.body).toEqual(createThreadPayload.body);
-      expect(results.owner).toEqual(createThreadPayload.owner);
-      expect(results).toHaveProperty('updated_at');
-      expect(results).toHaveProperty('created_at');
+      expect(results.username).toBeDefined();
+      expect(results.date).toBeDefined();
     });
   });
 
