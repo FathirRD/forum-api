@@ -33,7 +33,8 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       text: `SELECT replies.*, users.username
              FROM replies INNER JOIN users
              ON replies.owner = users.id
-             WHERE replies.comment = $1`,
+             WHERE replies.comment = $1
+             ORDER BY replies.created_at ASC`,
       values: [commentId],
     };
 

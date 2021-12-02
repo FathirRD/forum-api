@@ -25,6 +25,7 @@ describe('a DetailComment entity', () => {
       is_deleted: true,
       owner: 'user-1234',
       replies: [],
+      username: 'asdf',
     };
 
     // action & assert
@@ -42,6 +43,7 @@ describe('a DetailComment entity', () => {
       is_deleted: false,
       owner: 'user-1234',
       replies: [],
+      username: 'asdftester',
     };
 
     // Action
@@ -56,5 +58,6 @@ describe('a DetailComment entity', () => {
     expect(detailComment.is_deleted).toEqual(payload.is_deleted);
     expect(detailComment.owner).toEqual(payload.owner);
     expect(detailComment.replies).toEqual(payload.replies);
+    expect(detailComment.username).toEqual(payload.username);
   });
 });

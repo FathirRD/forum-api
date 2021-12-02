@@ -14,7 +14,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const id = `thread-${this._idGenerator()}`;
 
     const query = {
-      text: `INSERT INTO threads (id, title, body, owner)
+      text: `INSERT INTO threads(id, title, body, owner)
              VALUES($1, $2, $3, $4) RETURNING id, title, owner`,
       values: [id, title, body, owner],
     };
@@ -62,12 +62,26 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     };
 
     const result = await this._pool.query(query);
-
     if (!result.rowCount) {
       throw new NotFoundError('thread tidak ditemukan');
     }
 
     return result.rows[0];
+  }
+
+  async getThreadById(thread) {
+    const query = {
+      text: 'SELECT * FROM threads WHERE id = $1',
+      values: [thread],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('thread tidak ditemukan');
+    }
+
+    return result.rows;
   }
 }
 

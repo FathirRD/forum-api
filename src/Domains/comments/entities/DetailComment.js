@@ -12,11 +12,12 @@ class DetailComment {
     this.is_deleted = payload.is_deleted;
     this.owner = payload.owner;
     this.replies = payload.replies;
+    this.username = payload.username;
   }
 
   _verifyPayload(payload) {
     const {
-      id, content, thread, created_at, updated_at, owner, is_deleted, replies,
+      id, content, thread, created_at, updated_at, owner, is_deleted, replies, username,
     } = payload;
 
     if (
@@ -28,6 +29,7 @@ class DetailComment {
       || !owner
       || is_deleted === undefined
       || !replies
+      || !username
     ) {
       throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
@@ -41,6 +43,7 @@ class DetailComment {
       || typeof is_deleted !== 'boolean'
       || typeof owner !== 'string'
       || !(Array.isArray(replies))
+      || typeof username !== 'string'
     ) {
       throw new Error('DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }

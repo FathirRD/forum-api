@@ -61,7 +61,7 @@ describe('DeleteCommentUseCase', () => {
       .toBeCalledWith(expectedToken);
 
     expect(mockCommentRepository.getCommentById)
-      .toBeCalledWith(useCaseParameter.commentId);
+      .toBeCalledWith(useCaseParameter.commentId, useCaseParameter.threadId);
     expect(mockCommentRepository.verifyCommentAccess)
       .toBeCalledWith({
         ownerId: decodedTokenUserId,

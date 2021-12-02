@@ -45,10 +45,10 @@ class CommentRepositoryPostgres extends CommentRepository {
     }));
   }
 
-  async getCommentById(commentId) {
+  async getCommentById(commentId, threadId) {
     const query = {
-      text: 'SELECT * FROM comments WHERE id = $1',
-      values: [commentId],
+      text: 'SELECT * FROM comments WHERE id = $1 and thread = $2',
+      values: [commentId, threadId],
     };
 
     const result = await this._pool.query(query);

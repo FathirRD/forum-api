@@ -47,7 +47,7 @@ describe('AddThreadUseCase', () => {
     // Assert
     expect(createdThread).toStrictEqual(expectedCreatedThread);
     expect(mockAuthenticationTokenManager.getHeaderAuthorization)
-      .toBeCalledWith(useCaseHeader);
+      .toBeCalledWith(useCaseHeader.authorization);
     expect(mockAuthenticationTokenManager.verifyAccessToken())
       .resolves.toBeUndefined();
     expect(mockAuthenticationTokenManager.decodePayload)

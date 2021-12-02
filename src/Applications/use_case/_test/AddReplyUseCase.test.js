@@ -75,7 +75,7 @@ describe('AddReplyUseCase', () => {
       .toBeCalledWith(expectedToken);
 
     expect(mockCommentRepository.getCommentById)
-      .toBeCalledWith(useCaseParameter.commentId);
+      .toBeCalledWith(useCaseParameter.commentId, useCaseParameter.threadId);
 
     expect(mockReplyRepository.addReply).toBeCalledWith(new AddReply({
       thread: useCaseParameter.threadId,

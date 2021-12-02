@@ -9,7 +9,7 @@ const pool = require('../../database/postgres/pool');
 const container = require('../../container');
 const createServer = require('../createServer');
 
-describe('/thrads endpoint', () => {
+describe('/threads/{threadId}/comments endpoint', () => {
   afterEach(async () => {
     await UsersTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
@@ -22,12 +22,11 @@ describe('/thrads endpoint', () => {
     await pool.end();
   });
 
-  describe('when POST /threads', () => {
-    it('should response 201 and persisted thread', async () => {
+  describe('when POST /threads/{threadId}/comments', () => {
+    it('should response 201 and persisted comment', async () => {
       // Arrange
       const requestPayload = {
-        title: 'Test Thread',
-        body: 'POST Thread',
+        content: 'POST Comment',
       };
 
       const server = await createServer(container);
@@ -36,12 +35,16 @@ describe('/thrads endpoint', () => {
       const testUser = await ServerTestHelper.registerTestUser({ server });
       // get accessToken with testUser credential
       const token = await ServerTestHelper.loginTestUser({ server });
+      const { id: userId } = testUser;
       const { accessToken } = token;
+      const threadId = 'thread-123';
+
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
 
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: '/threads',
+        url: `/threads/${threadId}/comments`,
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -49,30 +52,35 @@ describe('/thrads endpoint', () => {
       });
 
       // Assert
-      const responseJSON = JSON.parse(response.payload);
+      const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(201);
-      expect(responseJSON.status).toEqual('success');
-      expect(responseJSON.data).toBeDefined();
-      expect(responseJSON.data.addedThread).toBeDefined();
-      expect(responseJSON.data.addedThread.id).toBeDefined();
-      expect(responseJSON.data.addedThread.title).toEqual(requestPayload.title);
-      expect(responseJSON.data.addedThread.owner).toEqual(testUser.id);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data).toBeDefined();
+      expect(responseJson.data.addedComment).toBeDefined();
+      expect(responseJson.data.addedComment.id).toBeDefined();
+      expect(responseJson.data.addedComment.content).toEqual(requestPayload.content);
+      expect(responseJson.data.addedComment.owner).toEqual(userId);
     });
 
-    it('should response 401 when authorization not provided', async () => {
+    it('should response 401 when authorization not provieded', async () => {
       // Arrange
       const requestPayload = {
-        title: 'Test Thread',
-        body: 'Anonymous POST',
-        owner: 'Anonymous',
+        content: 'Anonymous POST',
       };
 
       const server = await createServer(container);
 
+      // create test user (default username, pw with tester and asdf7776)
+      const testUser = await ServerTestHelper.registerTestUser({ server });
+      const { id: userId } = testUser;
+      const threadId = 'thread-123';
+
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: '/threads',
+        url: `/threads/${threadId}/comments`,
         payload: requestPayload,
       });
 
@@ -85,9 +93,7 @@ describe('/thrads endpoint', () => {
 
     it('should response 400 when request payload not contain needed property', async () => {
       // Arrange
-      const requestPayload = {
-        title: 'Incomplete Payload',
-      };
+      const requestPayload = {};
 
       const server = await createServer(container);
 
@@ -95,31 +101,33 @@ describe('/thrads endpoint', () => {
       const testUser = await ServerTestHelper.registerTestUser({ server });
       // get accessToken with testUser credential
       const token = await ServerTestHelper.loginTestUser({ server });
+      const { id: userId } = testUser;
       const { accessToken } = token;
+      const threadId = 'thread-123';
+
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
 
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: '/threads',
+        url: `/threads/${threadId}/comments`,
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
 
-      // Assert
+      // assert
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toBeDefined();
     });
 
-    it('should response 400 when request payload not meet data type specification', async () => {
+    it('should response 400 when request payload not meet data type specifications', async () => {
       // Arrange
-      /* add thread payload */
       const requestPayload = {
-        title: {},
-        body: 'Bad payload',
+        content: 99989,
       };
 
       const server = await createServer(container);
@@ -128,12 +136,16 @@ describe('/thrads endpoint', () => {
       const testUser = await ServerTestHelper.registerTestUser({ server });
       // get accessToken with testUser credential
       const token = await ServerTestHelper.loginTestUser({ server });
+      const { id: userId } = testUser;
       const { accessToken } = token;
+      const threadId = 'thread-123';
+
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
 
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: '/threads',
+        url: `/threads/${threadId}/comments`,
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -148,49 +160,83 @@ describe('/thrads endpoint', () => {
     });
   });
 
-  describe('when GET /threads/{threadId}', () => {
-    it('should response 200 and return detail thread', async () => {
+  describe('when DELETE /threads/{threadId}/comments/{commentId}', () => {
+    it('should response 200 and return success status', async () => {
       // Arrange
-      // add 2 user with id 1111 and 2222 for tester1 and tester2
-      await UsersTableTestHelper.addUserMany();
-      // add 3 thread with id 1234, 12345, 123456 for Test Thread, (2), (3) - 2 user-1111
-      await ThreadsTableTestHelper.addThreadMany();
-      // add 3 comment with id 111, 222, 333 for 2 thread-1234 and 1 thread-12345 - 1 user-1111
-      await CommentsTableTestHelper.addCommentMany();
-      // add 3 reply with id 111, 222, 333 for 2 comment-111 and 1 coment-222 - 2 user-1111
-      await RepliesTableTestHelper.addReplyMany();
-
       const server = await createServer(container);
 
-      // Action
+      // create test user (default username, pw with tester and asdf7776)
+      const testUser = await ServerTestHelper.registerTestUser({ server });
+      // get accessToken with testUser credential
+      const token = await ServerTestHelper.loginTestUser({ server });
+      const { id: userId } = testUser;
+      const { accessToken } = token;
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+      await CommentsTableTestHelper.addComment(
+        { id: commentId, thread: threadId, owner: userId },
+      );
+
+      // action
       const response = await server.inject({
-        method: 'GET',
-        url: '/threads/thread-1234',
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
-      // Assert
+      // assert
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(200);
       expect(responseJson.status).toEqual('success');
-      expect(responseJson.data).toBeDefined();
-      expect(responseJson.data.thread).toBeDefined();
-      expect(responseJson.data.thread.comments).toHaveLength(2);
-      expect(responseJson.data.thread.comments[0].replies).toHaveLength(2);
-      expect(responseJson.data.thread.comments[1].replies).toHaveLength(1);
     });
 
-    it('should response 404 if thread not found', async () => {
-      // Assert
+    it('should response 403 when someone tries an action to resource that they dont own', async () => {
+      // Arrange
       const server = await createServer(container);
+
+      // create test user (default username, pw with tester and asdf7776)
+      const testUser = await ServerTestHelper.registerTestUser({ server });
+      // get accessToken with testUser credential
+      const token = await ServerTestHelper.loginTestUser({ server });
+      const { id: userId } = testUser;
+      const { accessToken } = token;
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+      await CommentsTableTestHelper.addComment(
+        { id: commentId, thread: threadId, owner: userId },
+      );
+
+      // 2nd user
+      // create test user (default username, pw with tester and asdf7776)
+      const testUser2 = await ServerTestHelper.registerTestUser(
+        { server, username: 'tester2' },
+      );
+      // get accessToken with testUser c  redential
+      const token2 = await ServerTestHelper.loginTestUser(
+        { server, username: 'tester2' },
+      );
+
+      const { id: userId2 } = testUser2;
+      const { accessToken: accessToken2 } = token2;
 
       // Action
       const response = await server.inject({
-        method: 'GET',
-        url: '/threads/adsjfhocvxpofsd-thread',
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${accessToken2}`,
+        },
       });
 
+      // Assert
       const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(404);
+      expect(response.statusCode).toEqual(403);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toBeDefined();
     });

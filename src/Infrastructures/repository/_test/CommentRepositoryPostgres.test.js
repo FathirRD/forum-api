@@ -113,7 +113,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action
       // Assert
-      await expect(commentRepositoryPostgres.getCommentById('comment-ayeayeadsfjapisdfjaslk'))
+      await expect(commentRepositoryPostgres.getCommentById('comment-ayeayeadsfjapisdfjaslk', 'thread-asdf'))
         .rejects.toThrowError(NotFoundError);
     });
 
@@ -127,7 +127,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action
       // Assert
-      const result = await commentRepositoryPostgres.getCommentById('comment-111');
+      const result = await commentRepositoryPostgres.getCommentById('comment-111', 'thread-1234');
       expect(result).toHaveLength(1);
     });
   });

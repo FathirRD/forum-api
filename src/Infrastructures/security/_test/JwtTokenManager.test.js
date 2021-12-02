@@ -1,5 +1,6 @@
 const Jwt = require('@hapi/jwt');
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
+const AuthenticationError = require('../../../Commons/exceptions/AuthenticationError');
 const JwtTokenManager = require('../JwtTokenManager');
 
 describe('JwtTokenManager', () => {
@@ -64,6 +65,56 @@ describe('JwtTokenManager', () => {
       await expect(jwtTokenManager.verifyRefreshToken(refreshToken))
         .resolves
         .not.toThrow(InvariantError);
+    });
+  });
+
+  describe('verifyAccessToken', () => {
+    it('should throw InvariantError when verification failed', async () => {
+      // arrange
+      const jwtTokenManager = new JwtTokenManager(Jwt.token);
+      const accessToken = 'ayeayeayeyaeyaeyoaisdfuoasdifjlkasd';
+
+      // Action
+      // Assert
+      await expect(jwtTokenManager.verifyAccessToken(accessToken))
+        .rejects
+        .toThrow(InvariantError);
+    });
+
+    it('should not throw InvariantError when access token verified', async () => {
+      // Arrange
+      const jwtTokenManager = new JwtTokenManager(Jwt.token);
+      const refreshToken = await jwtTokenManager.createAccessToken({ username: 'JohnDoe' });
+
+      // Action & Assert
+      await expect(jwtTokenManager.verifyAccessToken(refreshToken))
+        .resolves
+        .not.toThrow(InvariantError);
+    });
+  });
+
+  describe('getHeaderAuthorzation', () => {
+    it('should return accessToken correctly from request header', async () => {
+      // arrange
+      const jwtTokenManager = new JwtTokenManager(Jwt.token);
+      const header = 'Bearer token-asdf';
+
+      // action
+      const token = await jwtTokenManager.getHeaderAuthorization(header);
+
+      // assert
+      expect(token).toEqual('token-asdf');
+    });
+
+    it('should throw error when header not provided', async () => {
+      // arrange
+      const jwtTokenManager = new JwtTokenManager(Jwt.token);
+      const header = '';
+
+      // action & assert
+      await expect(jwtTokenManager.getHeaderAuthorization(header))
+        .rejects
+        .toThrow(AuthenticationError);
     });
   });
 

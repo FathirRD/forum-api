@@ -13,7 +13,9 @@ class AddReplyUseCase {
     await this._authenticationTokenManager.verifyAccessToken(accessToken);
     const { id: owner } = await this._authenticationTokenManager.decodePayload(accessToken);
 
-    await this._commentRepository.getCommentById(useCaseParameter.commentId);
+    await this._commentRepository.getCommentById(
+      useCaseParameter.commentId, useCaseParameter.threadId,
+    );
     const addReply = new AddReply({
       ...useCasePayload, ...useCaseParameter, comment: useCaseParameter.commentId, owner,
     });

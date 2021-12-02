@@ -13,7 +13,7 @@ class DeleteCommentUseCase {
     await this._authenticationTokenManager.verifyAccessToken(accessToken);
     const { id: ownerId } = await this._authenticationTokenManager.decodePayload(accessToken);
 
-    await this._commentRepository.getCommentById(commentId);
+    await this._commentRepository.getCommentById(commentId, threadId);
     await this._commentRepository.verifyCommentAccess({ commentId, ownerId });
     await this._commentRepository.deleteComment(commentId);
   }

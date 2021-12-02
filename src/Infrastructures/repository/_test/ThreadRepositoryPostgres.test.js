@@ -160,4 +160,39 @@ describe('ThreadRepositoryPostgres', () => {
       expect(results).toHaveLength(2);
     });
   });
+
+  describe('getThreadById function', () => {
+    it('should throw NotFoundError when thread not found', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUserMany();
+
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+      await ThreadsTableTestHelper.addThreadMany();
+
+      // Action
+      // Assert
+      await expect(threadRepositoryPostgres.getThreadById('thread-neverBeFound'))
+        .rejects.toThrowError(NotFoundError);
+    });
+
+    it('should return a thread when its found', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUserMany();
+
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      const createThreadPayload = {
+        id: 'thread-1234',
+        title: 'Test Thread',
+        body: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+        owner: 'user-1111',
+      };
+      await ThreadsTableTestHelper.addThread(createThreadPayload);
+
+      // Action
+      // Assert
+      const results = await threadRepositoryPostgres.getThreadById('thread-1234');
+      expect(results).toHaveLength(1);
+    });
+  });
 });

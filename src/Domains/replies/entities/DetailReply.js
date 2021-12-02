@@ -11,11 +11,12 @@ class DetailReply {
     this.updated_at = payload.updated_at;
     this.owner = payload.owner;
     this.is_deleted = payload.is_deleted;
+    this.username = payload.username;
   }
 
   _verifyPayload(payload) {
     const {
-      id, comment, content, created_at, updated_at, owner, is_deleted,
+      id, comment, content, created_at, updated_at, owner, is_deleted, username,
     } = payload;
 
     if (
@@ -26,6 +27,7 @@ class DetailReply {
       || !updated_at
       || !owner
       || is_deleted === undefined
+      || !username
     ) {
       throw new Error('DETAIL_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
     }
@@ -37,6 +39,7 @@ class DetailReply {
       || !(updated_at instanceof Date && !Number.isNaN(updated_at))
       || typeof owner !== 'string'
       || typeof is_deleted !== 'boolean'
+      || typeof username !== 'string'
     ) {
       throw new Error('DETAIL_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }

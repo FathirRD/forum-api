@@ -10,7 +10,7 @@ class detailThreadUseCase {
 
   async execute(useCaseParameter) {
     const { threadId } = useCaseParameter;
-    const threadDetail = await this._threadRepository.getThreadById(threadId);
+    const threadDetail = await this._threadRepository.getDetailThread(threadId);
     threadDetail.comments = await this._commentRepository.getCommentsByThread(threadId);
 
     threadDetail.comments = this._isDeletedComments(threadDetail.comments);
@@ -21,23 +21,25 @@ class detailThreadUseCase {
 
   _isDeletedComments(comments) {
     for (let i = 0; i < comments.length; i += 1) {
-      if (comments[i].is_deleted) comments[i].content = '**Komentar telah dihapus**';
+      if (comments[i].is_deleted) comments[i].content = '**komentar telah dihapus**';
+      comments[i].date = String(comments[i].created_at);
+      delete comments[i].created_at;
       delete comments[i].is_deleted;
     }
     return comments;
   }
 
   async _getCommentsWithReplies(comments) {
-    console.log(comments[0].id);
     for (let i = 0; i < comments.length; i += 1) {
       const commentReplies = await this._replyRepository.getRepliesByComment(comments[i].id);
       comments[i].replies = commentReplies.map((reply) => {
-        if (reply.is_deleted) reply.content = '**Balasan telah dihapus**';
+        if (reply.is_deleted) reply.content = '**balasan telah dihapus**';
+        reply.date = String(reply.created_at);
+        delete reply.created_at;
         delete reply.is_deleted;
         return reply;
       });
     }
-    console.log(comments);
     return comments;
   }
 }

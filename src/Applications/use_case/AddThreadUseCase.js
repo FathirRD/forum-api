@@ -8,11 +8,11 @@ class AddThreadUseCase {
 
   async execute(useCasePayload, useCaseHeader) {
     const accessToken = await this._authenticationTokenManager
-      .getHeaderAuthorization(useCaseHeader);
+      .getHeaderAuthorization(useCaseHeader.authorization);
     await this._authenticationTokenManager.verifyAccessToken(accessToken);
     const { id: owner } = await this._authenticationTokenManager.decodePayload(accessToken);
-    const newThread = new CreateThread({ ...useCasePayload, owner });
-    return this._threadRepository.addThread(newThread);
+    const addThread = new CreateThread({ ...useCasePayload, owner });
+    return this._threadRepository.addThread(addThread);
   }
 }
 

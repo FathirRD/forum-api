@@ -25,6 +25,7 @@ describe('a DetailReply entity', () => {
       updated_at: new Date(),
       owner: 'user-1234',
       is_deleted: 'YES',
+      username: 'asdlkfjclvnx,cvnxcv,xncv',
     };
 
     // Action
@@ -42,6 +43,7 @@ describe('a DetailReply entity', () => {
       updated_at: new Date(),
       owner: 'user-1234',
       is_deleted: false,
+      username: 'aiyaiyaiayia',
     };
 
     // Action
@@ -55,5 +57,6 @@ describe('a DetailReply entity', () => {
     expect(addedReply.updated_at).toEqual(payload.updated_at);
     expect(addedReply.owner).toEqual(payload.owner);
     expect(addedReply.is_deleted).toEqual(payload.is_deleted);
+    expect(addedReply.username).toEqual(payload.username);
   });
 });

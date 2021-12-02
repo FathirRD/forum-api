@@ -32,6 +32,7 @@ describe('DetailThreadUseCase', () => {
         content: 'aaa',
         replies: [],
         is_deleted: false,
+        username: 'tester1',
       }),
       new DetailComment({
         id: 'comment-1234',
@@ -42,6 +43,7 @@ describe('DetailThreadUseCase', () => {
         content: 'bbb',
         replies: [],
         is_deleted: false,
+        username: 'tester2',
       }),
     ];
 
@@ -54,6 +56,7 @@ describe('DetailThreadUseCase', () => {
         updated_at: new Date(),
         owner: 'user-222',
         is_deleted: false,
+        username: 'tester22',
       }),
       new DetailReply({
         id: 'reply-222',
@@ -63,6 +66,7 @@ describe('DetailThreadUseCase', () => {
         updated_at: new Date(),
         owner: 'user-111',
         is_deleted: false,
+        username: 'tester23',
       }),
     ];
 
@@ -105,7 +109,7 @@ describe('DetailThreadUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
 
     // mocking
-    mockThreadRepository.getThreadById = jest.fn()
+    mockThreadRepository.getDetailThread = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedDetailThread));
 
     mockCommentRepository.getCommentsByThread = jest.fn()
@@ -135,7 +139,7 @@ describe('DetailThreadUseCase', () => {
       ...expectedDetailThread, comments: expectedCommentsWithReplies,
     }));
 
-    expect(mockThreadRepository.getThreadById)
+    expect(mockThreadRepository.getDetailThread)
       .toBeCalledWith(useCaseParameter.threadId);
     expect(mockCommentRepository.getCommentsByThread)
       .toBeCalledWith(useCaseParameter.threadId);
@@ -167,6 +171,7 @@ describe('DetailThreadUseCase', () => {
         content: 'aaa',
         replies: [],
         is_deleted: false,
+        username: 'tester1',
       }),
       new DetailComment({
         id: 'comment-1234',
@@ -177,6 +182,7 @@ describe('DetailThreadUseCase', () => {
         content: 'bbb',
         replies: [],
         is_deleted: true,
+        username: 'tester2',
       }),
     ];
 
@@ -200,7 +206,7 @@ describe('DetailThreadUseCase', () => {
 
     // Assert
     expect(SpyCheckIsDeletedComments).toReturnWith(
-      [dummyComments[0], { ...dummyComments[1], content: '**Komentar telah dihapus**' }],
+      [dummyComments[0], { ...dummyComments[1], content: '**komentar telah dihapus**' }],
     );
 
     SpyCheckIsDeletedComments.mockClear();
@@ -231,6 +237,7 @@ describe('DetailThreadUseCase', () => {
         content: 'aaa',
         replies: [],
         is_deleted: false,
+        username: 'tester',
       }),
       new DetailComment({
         id: 'comment-1234',
@@ -241,6 +248,7 @@ describe('DetailThreadUseCase', () => {
         content: 'bbb',
         replies: [],
         is_deleted: false,
+        username: 'tester1',
       }),
     ];
 
@@ -253,6 +261,7 @@ describe('DetailThreadUseCase', () => {
         updated_at: new Date(),
         owner: 'user-222',
         is_deleted: false,
+        username: 'tester22',
       }),
       new DetailReply({
         id: 'reply-222',
@@ -262,6 +271,7 @@ describe('DetailThreadUseCase', () => {
         updated_at: new Date(),
         owner: 'user-111',
         is_deleted: false,
+        username: 'tester23',
       }),
     ];
 
@@ -304,7 +314,7 @@ describe('DetailThreadUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
 
     // mocking
-    mockThreadRepository.getThreadById = jest.fn()
+    mockThreadRepository.getDetailThread = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedDetailThread));
 
     mockCommentRepository.getCommentsByThread = jest.fn()

@@ -8,11 +8,11 @@ class DeleteReplyUseCase {
     const accessToken = await this._authenticationTokenManager
       .getHeaderAuthorization(useCaseHeader.authorization);
     await this._authenticationTokenManager.verifyAccessToken(accessToken);
-    const { id: owner } = await this._authenticationTokenManager.decodePayload(accessToken);
+    const { id: ownerId } = await this._authenticationTokenManager.decodePayload(accessToken);
 
     await this._replyRepository.getReplyById(useCaseParameter.replyId);
     await this._replyRepository.verifyReplyAccess({
-      owner, id: useCaseParameter.replyId,
+      ownerId, replyId: useCaseParameter.replyId,
     });
     await this._replyRepository.deleteReply(useCaseParameter.replyId);
   }

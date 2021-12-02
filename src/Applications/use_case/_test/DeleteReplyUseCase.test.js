@@ -60,8 +60,8 @@ describe('DeleteReplyUseCase', () => {
     expect(mockReplyRepository.getReplyById)
       .toBeCalledWith(useCaseParameter.replyId);
     expect(mockReplyRepository.verifyReplyAccess).toBeCalledWith({
-      owner: decodedTokenUserId,
-      id: useCaseParameter.replyId,
+      ownerId: decodedTokenUserId,
+      replyId: useCaseParameter.replyId,
     });
     expect(mockReplyRepository.deleteReply)
       .toBeCalledWith(useCaseParameter.replyId);
